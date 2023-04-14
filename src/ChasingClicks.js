@@ -1,11 +1,12 @@
-
-import {useState, useEffect} from 'react';
+import {useState, useEffect ,useRef} from 'react';
+import {io} from 'socket.io-client';
 
 export default function ChasingClicks () {
     
     const [clickData, setClickData] = useState([]);
     const [placeName, setPlaceName] = useState('');
-
+    const socket = useRef();
+    const [highlights, setHighlights] = useState([]);
 
     const handleClick = () => {
 
@@ -24,6 +25,10 @@ export default function ChasingClicks () {
             return arr;
         });
 
+        setHighlights(prevHighlights => {
+            return [...prevHighlights, index]
+        })
+
         const body = JSON.stringify({
             placeName,
             clicks: index >= 0 ? clickData[index].clicks + 1 : 1
@@ -38,12 +43,14 @@ export default function ChasingClicks () {
                 body
             })
         }
+
+        socket.current.emit('click', placeName);
     }
 
 
     const ClickChart = () => {
 
-        const Row = ({name, count, headers}) => {
+        const Row = ({name, count, headers, index}) => {
             if (name) {
                 
                 let nameArr;
@@ -53,7 +60,8 @@ export default function ChasingClicks () {
                     nameArr = [name];
                     undisclosed = true;
                 }
-                else nameArr = name.split('_')
+                else nameArr = name.split('_');
+
 
                 return <div className={`row ${headers ? 'headers' : ''}`}>
                     <div className='count-column column'>{count}</div>
@@ -70,13 +78,16 @@ export default function ChasingClicks () {
             <div className='click-chart'>
                 <Row name='Locality_Area_Country' count='Clicks' headers={true}/>
                 {clickData.map((e, i) => {
-                    return <Row name={e.placeName} count={e.clicks} key={i}/>
+                    return <Row name={e.placeName} count={e.clicks} index={i} key={i}/>
                 })}
             </div>
         )
     }
 
     useEffect(() => {
+        // connect to websocket
+        socket.current = io('http://localhost:8000');
+
         // fetch clicks from db
         fetch(`https://click-chaser-backend.onrender.com/locales/`)
         .then(res => res.json())
@@ -119,6 +130,24 @@ export default function ChasingClicks () {
             };
         });
     }, []);
+
+    useEffect(() => {
+        // receive clicks from other users
+        socket.current.on('click', placeName => {
+            const index = clickData.findIndex(e => e.placeName === placeName);
+
+            setClickData(prevClickData => {
+                const arr = [...prevClickData];
+    
+                if (index >= 0) arr[index].clicks++
+                else arr.unshift({placeName, clicks: 1})
+                        
+                return arr;
+            });    
+        })
+
+        return () => socket.current.off('click');
+    })
 
     const totalClicks = clickData.reduce((a,b) => {
         return a + b.clicks
