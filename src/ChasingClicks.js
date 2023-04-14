@@ -86,7 +86,7 @@ export default function ChasingClicks () {
 
     useEffect(() => {
         // connect to websocket
-        socket.current = io('http://localhost:8000');
+        socket.current = io('https://click-chaser-backend.onrender.com');
 
         // fetch clicks from db
         fetch(`https://click-chaser-backend.onrender.com/locales/`)
