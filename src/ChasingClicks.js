@@ -110,8 +110,15 @@ export default function ChasingClicks () {
         }
 
         navigator.geolocation.getCurrentPosition(permissionGranted, permissionDenied);
+
+        navigator.permissions
+        .query({ name: "geolocation" })
+        .then((permissionStatus) => {
+            permissionStatus.onchange = () => {
+                navigator.geolocation.getCurrentPosition(permissionGranted, permissionDenied);
+            };
+        });
     }, []);
-    
 
     const totalClicks = clickData.reduce((a,b) => {
         return a + b.clicks
