@@ -1,10 +1,10 @@
 import {useState, useEffect ,useRef} from 'react';
-import {io} from 'socket.io-client';
+import io from 'socket.io-client';
 
 export default function ChasingClicks () {
     
     const [clickData, setClickData] = useState([]);
-    const [placeName, setPlaceName] = useState('');
+    const [placeName, setPlaceName] = useState('Undisclosed Location');
     const socket = useRef();
     const [highlights, setHighlights] = useState([]);
 
@@ -50,7 +50,7 @@ export default function ChasingClicks () {
 
     const ClickChart = () => {
 
-        const Row = ({name, count, headers, index}) => {
+        const Row = ({name, count, headers}) => {
             if (name) {
                 
                 let nameArr;
@@ -78,7 +78,7 @@ export default function ChasingClicks () {
             <div className='click-chart'>
                 <Row name='Locality_Area_Country' count='Clicks' headers={true}/>
                 {clickData.map((e, i) => {
-                    return <Row name={e.placeName} count={e.clicks} index={i} key={i}/>
+                    return <Row name={e.placeName} count={e.clicks} key={i}/>
                 })}
             </div>
         )
