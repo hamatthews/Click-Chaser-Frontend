@@ -6,10 +6,8 @@ export default function ChasingClicks () {
     const [clickData, setClickData] = useState([]);
     const [placeName, setPlaceName] = useState('Undisclosed Location');
     const socket = useRef();
-    const [highlights, setHighlights] = useState([]);
 
     const handleClick = () => {
-
         const index = clickData.findIndex(e => e.placeName === placeName);
 
         setClickData(prevClickData => {
@@ -24,10 +22,6 @@ export default function ChasingClicks () {
                     
             return arr;
         });
-
-        setHighlights(prevHighlights => {
-            return [...prevHighlights, index]
-        })
 
         const body = JSON.stringify({
             placeName,
@@ -49,10 +43,8 @@ export default function ChasingClicks () {
 
 
     const ClickChart = () => {
-
-        const Row = ({name, count, headers}) => {
+        const Row = ({name, count, headers, index}) => {
             if (name) {
-                
                 let nameArr;
                 let undisclosed = false;
 
@@ -62,15 +54,16 @@ export default function ChasingClicks () {
                 }
                 else nameArr = name.split('_');
 
-
-                return <div className={`row ${headers ? 'headers' : ''}`}>
-                    <div className='count-column column'>{count}</div>
-                    <div className={`locality-column column ${undisclosed ? 'undisclosed' : ''}`}>{nameArr[0]}</div>
-                    {!undisclosed && <>
-                        <div className='area-column column'>{nameArr[1]}</div>
-                        <div className='country-column column'>{nameArr[2]}</div>
-                    </>}
-                </div>    
+                return <>
+                    <div className={`row ${headers ? 'headers' : ''}`}>
+                        <div className='count-column column'>{count}</div>
+                        <div className={`locality-column column ${undisclosed ? 'undisclosed' : ''}`}>{nameArr[0]}</div>
+                        {!undisclosed && <>
+                            <div className='area-column column'>{nameArr[1]}</div>
+                            <div className='country-column column'>{nameArr[2]}</div>
+                        </>}
+                    </div>
+                </> 
             }
         }
 
@@ -78,7 +71,7 @@ export default function ChasingClicks () {
             <div className='click-chart'>
                 <Row name='Locality_Area_Country' count='Clicks' headers={true}/>
                 {clickData.map((e, i) => {
-                    return <Row name={e.placeName} count={e.clicks} key={i}/>
+                    return <Row name={e.placeName} count={e.clicks} index={i} key={i}/>
                 })}
             </div>
         )
@@ -155,11 +148,13 @@ export default function ChasingClicks () {
         return a + b.clicks
     }, 0); 
 
-    return (
+    return (<>
         <div className='chasing-clicks'>
+            <div className='disclaimer'>I used WebSocket for real time updates, so it's not a bug if you see the numbers changing on their own.</div>
             <div className='btn' onClick={handleClick}>Click!</div>
             <div className='total-clicks'>Total: {totalClicks}</div>
             <ClickChart />
         </div>
+        </>
     )
 }

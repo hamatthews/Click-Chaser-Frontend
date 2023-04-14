@@ -31,6 +31,10 @@ code {
   box-shadow: 1px 1px 3px black;
 }
 
+.disclaimer {
+  margin-bottom: 20px;
+}
+
 .btn {
   width: 80px;
   height: 40px;
@@ -58,12 +62,12 @@ code {
 .click-chart {
   display: flex;
   flex-direction: column;
-  background: rgb(200,200,255);
   width: 95%;
 }
 
 .row {
   display: flex;
+  background-color: rgb(200,200,255);
 }
 
 .headers {
