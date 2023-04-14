@@ -122,13 +122,15 @@ export default function ChasingClicks () {
 
         navigator.geolocation.getCurrentPosition(permissionGranted, permissionDenied);
 
-        navigator.permissions
-        .query({ name: "geolocation" })
-        .then((permissionStatus) => {
-            permissionStatus.onchange = () => {
-                navigator.geolocation.getCurrentPosition(permissionGranted, permissionDenied);
-            };
-        });
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions
+            .query({ name: "geolocation" })
+            .then((permissionStatus) => {
+                permissionStatus.onchange = () => {
+                    navigator.geolocation.getCurrentPosition(permissionGranted, permissionDenied);
+                };
+            });    
+        };
     }, []);
 
     useEffect(() => {
