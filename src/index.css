@@ -1,5 +1,6 @@
 * {
   margin: 0;
+  font-size: min(3vw, 24px);
 }
 
 body {
@@ -58,6 +59,7 @@ code {
   display: flex;
   flex-direction: column;
   background: rgb(200,200,255);
+  width: 95%;
 }
 
 .row {
@@ -69,13 +71,17 @@ code {
 }
 
 .column {
+  flex-basis: 0;
+  flex-shrink: 1;
+  flex-grow: 1;
   padding: 2px;
-  width: 200px;
   border: 1px solid black;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
 .undisclosed {
-  flex-grow: 1;
+  flex-grow: 3;
+  flex-basis: 9px;
+  padding-right: 3px;
 }
